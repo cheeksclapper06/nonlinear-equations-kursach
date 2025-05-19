@@ -9,6 +9,7 @@ using kursovaya.Methods;
 
 namespace kursovaya
 {
+    
     public partial class MainWindow
     {
         public MainWindow()

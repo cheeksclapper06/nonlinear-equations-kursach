@@ -52,8 +52,7 @@
                     <TextBlock Text="z +" Foreground="White" VerticalAlignment="Center"/>
                     <TextBox Name="CoeffBox4" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
                 </StackPanel>
-
-                <!-- Ввід точності епсілон -->
+<!-- Ввід точності епсілон -->
                 <TextBlock Text="Enter precision (ε):" Foreground="White" FontWeight="Bold" Margin="0,10,0,5"/>
                 <TextBox Name="PrecisionBox" Width="100" Background="#FF535353" Foreground="White"/>
 

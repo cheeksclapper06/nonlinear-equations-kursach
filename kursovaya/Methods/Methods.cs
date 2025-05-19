@@ -14,7 +14,7 @@ public class Methods
 
             string result = "Algebraic roots:\n";
 
-            if (discriminant >= 0)
+             if (discriminant >= 0)
             {
                 // Один вещественный корень, два комплексных
                 double sqrtD = Math.Sqrt(discriminant);
