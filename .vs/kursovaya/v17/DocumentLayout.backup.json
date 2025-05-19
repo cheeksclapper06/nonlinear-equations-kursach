@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\kursovaya\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|c:\\users\\user\\source\\repos\\kursovaya\\kursovaya\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|solutionrelative:kursovaya\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|c:\\users\\user\\source\\repos\\kursovaya\\kursovaya\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|solutionrelative:kursovaya\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -13,10 +17,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|c:\\users\\user\\source\\repos\\kursovaya\\kursovaya\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|solutionrelative:kursovaya\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|c:\\users\\user\\source\\repos\\kursovaya\\kursovaya\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{91E5DFF1-BC8B-40D4-9B36-D37304396248}|kursovaya\\kursovaya.csproj|solutionrelative:kursovaya\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\FileName.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -30,19 +30,11 @@
       "DocumentGroups": [
         {
           "DockedHeight": 387,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{28836128-fc2c-11d2-a433-00c04f72d18a}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\MainWindow.xaml",
               "RelativeDocumentMoniker": "kursovaya\\MainWindow.xaml",
@@ -50,12 +42,11 @@
               "RelativeToolTip": "kursovaya\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-05-11T20:00:09.594Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AssemblyInfo.cs",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\AssemblyInfo.cs",
               "RelativeDocumentMoniker": "kursovaya\\AssemblyInfo.cs",
@@ -67,28 +58,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "App.xaml.cs",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\App.xaml.cs",
               "RelativeDocumentMoniker": "kursovaya\\App.xaml.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\App.xaml.cs*",
-              "RelativeToolTip": "kursovaya\\App.xaml.cs*",
+              "ToolTip": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\App.xaml.cs",
+              "RelativeToolTip": "kursovaya\\App.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-14T08:22:23.94Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-14T08:22:23.94Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "kursovaya\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\User\\source\\repos\\kursovaya\\kursovaya\\MainWindow.xaml.cs",
               "RelativeToolTip": "kursovaya\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFUAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAPgAAAAAAAAAAAAewAIBAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T14:29:42.242Z"
+              "WhenOpened": "2025-05-11T14:29:42.242Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -100,6 +91,14 @@
               "RelativeToolTip": "kursovaya\\FileName.cs",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-11T19:39:33.047Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{28836128-fc2c-11d2-a433-00c04f72d18a}"
             }
           ]
         },
