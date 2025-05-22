@@ -1,6 +1,7 @@
 ﻿<Window x:Class="kursovaya.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="Nonlinear equations calculator app"
         Height="650"
         Width="950"
@@ -41,18 +42,61 @@
             <!-- Панель зліва з налаштуваннями -->
             <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Top">
 
-                <!-- Ввід коефіцієнтів -->
-                <TextBlock Text="Enter the coefficients:" Foreground="White" FontWeight="Bold" FontFamily="Arial" Margin="0,0,0,5"/>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBox Name="CoeffBox1" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
-                    <TextBlock Text="z^3 +" Foreground="White" VerticalAlignment="Center"/>
-                    <TextBox Name="CoeffBox2" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
-                    <TextBlock Text="z^2 +" Foreground="White" VerticalAlignment="Center"/>
-                    <TextBox Name="CoeffBox3" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
-                    <TextBlock Text="z +" Foreground="White" VerticalAlignment="Center"/>
-                    <TextBox Name="CoeffBox4" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                <!-- Вибір типу рівняння -->
+                <TextBlock Text="Choose equation type:" Foreground="White" FontWeight="Bold" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton GroupName="EquationTypeGroup" x:Name="QuadraticCheck" Content="Quadratic" Foreground="White"/>
+                    <RadioButton GroupName="EquationTypeGroup" x:Name="CubicCheck" Content="Cubic" Foreground="White" Margin="10,0" IsChecked="True"/>
+                    <RadioButton GroupName="EquationTypeGroup" x:Name="BiquadraticCheck" Content="Biquadratic" Foreground="White" Margin="10,0"/>
                 </StackPanel>
-<!-- Ввід точності епсілон -->
+
+                <!-- Ввід коефіцієнтів (для кубічного рівняння за замовчуванням) -->
+                <TextBlock Text="Enter the coefficients:" Foreground="White" FontWeight="Bold" FontFamily="Arial" Margin="0,20,0,5"/>
+
+                <!-- Коефіцієнти для квадратного рівняння -->
+                <StackPanel Name="QuadraticCoefficients" Visibility="Collapsed" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBox x:Name="CoeffBox1Quadratic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x^2 +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox2Quadratic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox3Quadratic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                </StackPanel>
+                
+                <!-- Коефіцієнти для кубічного рівняння -->
+                <StackPanel Name="CubicCoefficients" Visibility="Collapsed" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBox x:Name="CoeffBox1Cubic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x^3 +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox2Cubic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x^2 +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox3Cubic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox4Cubic" Width="54" Margin="5" Background="#FF535353" Foreground="White"/>
+                </StackPanel>
+                
+                <!-- Коефіцієнти для біквадратного рівняння -->
+                <StackPanel Name="BiquadraticCoefficients" Visibility="Collapsed" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBox x:Name="CoeffBox1Biquadratic" Width="40" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x^4 +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox2Biquadratic" Width="40" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="x^2 +" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBox x:Name="CoeffBox3Biquadratic" Width="40" Margin="5" Background="#FF535353" Foreground="White"/>
+                </StackPanel>
+
+                <!-- Ввід початкового наближення для метода Ньютона -->
+                <StackPanel x:Name="InitialGuessPanel" Orientation="Horizontal" Margin="0,5" Visibility="Collapsed">
+                    <TextBlock Text="Начальное приближение (Ньютон):" Width="180" VerticalAlignment="Center" Foreground="White"/>
+                    <TextBox x:Name="InitialGuessBox" Width="100" Background="#FF535353" Foreground="White"/>
+                </StackPanel>
+
+                <!-- Ввід інтервалу для метода Бісекції -->
+                <StackPanel x:Name="BisectionIntervalPanel" Orientation="Horizontal" Margin="0,5" Visibility="Collapsed">
+                    <TextBlock Text="Интервал [левая; правая] (Бисекция):" Width="180" VerticalAlignment="Center" Foreground="White"/>
+                    <TextBox x:Name="LeftBoundBox" Width="80" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text=";" Margin="5,0" VerticalAlignment="Center" Foreground="White"/>
+                    <TextBox x:Name="RightBoundBox" Width="80" Background="#FF535353" Foreground="White"/>
+                </StackPanel>
+                
+                <!-- Ввід точності епсілон -->
                 <TextBlock Text="Enter precision (ε):" Foreground="White" FontWeight="Bold" Margin="0,10,0,5"/>
                 <TextBox Name="PrecisionBox" Width="100" Background="#FF535353" Foreground="White"/>
 
@@ -81,12 +125,12 @@
                          Height="53"
                          VerticalScrollBarVisibility="Auto" Width="327"/>
 
-                    <!-- Кнопка для збереження результату у файл -->
-                    <Button Name="SaveButton" Content="Save Result to File"
+                <!-- Кнопка для збереження результату у файл -->
+                <Button Name="SaveButton" Content="Save Result to File"
                     Foreground="White" Background="#FF717171"
                     Width="200" Height="30" Margin="0,10,0,0"/>
-                    
-                    <!-- Вивід практичної складності роботи алгоритму -->
+
+                <!-- Вивід практичної складності роботи алгоритму -->
                 <TextBlock Text="Algorithm complexity:" Foreground="White" Margin="0,20,0,5"/>
                 <TextBlock Name="ComplexityText" Foreground="LightGray" Text=""/>
 
@@ -99,7 +143,8 @@
             <!-- Панель справа з графом -->
             <StackPanel Grid.Column="2" Margin="20,0,0,0">
                 <TextBlock Text="Graph" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
-                <Canvas Name="GraphCanvas" Background="Black" Height="527"/>
+                <wv2:WebView2 Name="DesmosWebView" Source="about:blank" Height="480"/>
+                <Button Name="PlotInDesmosButton" Content="Plot in Desmos" Click="PlotInDesmosButton_Click" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>
     </Grid>
