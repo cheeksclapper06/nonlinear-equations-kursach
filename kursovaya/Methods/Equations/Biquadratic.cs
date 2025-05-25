@@ -41,7 +41,7 @@ namespace kursovaya.Methods.Equations
         // Solve algebraically in complex field
         public Complex[] SolveAlgebraically()
         {
-            // Substitute y = x^2 => ay² + by + c = 0
+            // Substitute t = x^2 => at² + bt + c = 0
             Complex A = a;
             Complex B = b;
             Complex C = c;
@@ -49,16 +49,16 @@ namespace kursovaya.Methods.Equations
             Complex discriminant = B * B - 4 * A * C;
             Complex sqrtD = Complex.Sqrt(discriminant);
 
-            Complex y1 = (-B + sqrtD) / (2 * A);
-            Complex y2 = (-B - sqrtD) / (2 * A);
+            Complex t1 = (-B + sqrtD) / (2 * A);
+            Complex t2 = (-B - sqrtD) / (2 * A);
 
-            Complex[] roots = new Complex[4];
-            roots[0] = Complex.Sqrt(y1);
-            roots[1] = -roots[0];
-            roots[2] = Complex.Sqrt(y2);
-            roots[3] = -roots[2];
+            Complex[] x = new Complex[4];
+            x[0] = Complex.Sqrt(t1);
+            x[1] = -x[0];
+            x[2] = Complex.Sqrt(t2);
+            x[3] = -x[2];
 
-            return roots;
+            return x;
         }
 
         // Newton's method

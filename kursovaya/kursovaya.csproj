@@ -13,10 +13,4 @@
     <PackageReference Include="Microsoft.Web.WebView2.DevToolsProtocolExtension" Version="1.0.2901" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Graph\desmos_graph.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

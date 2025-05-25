@@ -30,5 +30,4 @@ C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\Microsof
 C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovaya.csproj.AssemblyReference.cache
 C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovaya_Content.g.cs
 C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovaya.csproj.Up2Date
-C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\Graph\desmos_graph.html
 C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\Microsoft.Web.WebView2.DevToolsProtocolExtension.dll

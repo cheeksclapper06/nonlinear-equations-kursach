@@ -80,6 +80,7 @@
                     <TextBox x:Name="CoeffBox2Biquadratic" Width="40" Margin="5" Background="#FF535353" Foreground="White"/>
                     <TextBlock Text="x^2 +" Foreground="White" VerticalAlignment="Center"/>
                     <TextBox x:Name="CoeffBox3Biquadratic" Width="40" Margin="5" Background="#FF535353" Foreground="White"/>
+                    <TextBlock Text="= 0" Foreground="White" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Ввід початкового наближення для метода Ньютона -->
@@ -143,9 +144,9 @@
             <!-- Панель справа з графом -->
             <StackPanel Grid.Column="2" Margin="20,0,0,0">
                 <TextBlock Text="Graph" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
-                <wv2:WebView2 Name="DesmosWebView" Source="about:blank" Height="480"/>
-                <Button Name="PlotInDesmosButton" Content="Plot in Desmos" Click="PlotInDesmosButton_Click" Margin="0,10,0,0"/>
+                <Canvas Name="GraphCanvas" Width="400" Height="400" Background="Black"/>
             </StackPanel>
+
         </Grid>
     </Grid>
 </Window>

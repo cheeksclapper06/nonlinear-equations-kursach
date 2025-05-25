@@ -45,8 +45,8 @@ namespace kursovaya.Methods.Equations
             if (Math.Abs(a) < 1e-12)
                 throw new ArgumentException("Not a cubic equation (a == 0).");
 
-            double p = (3 * a * c - b * b) / (3 * a * a);
-            double q = (2 * b * b * b - 9 * a * b * c + 27 * a * a * d) / (27 * a * a * a);
+            double p = (3 * a * c - double.Pow(b, 2))/ (3 * double.Pow(a, 2));
+            double q = (2 * double.Pow(b, 3) - 9 * a * b * c + 27 * double.Pow(a, 2) * d) / (27 * double.Pow(a, 3));
             double offset = -b / (3 * a);
 
             Complex delta = Complex.Pow(q / 2.0, 2) + Complex.Pow(p / 3.0, 3);

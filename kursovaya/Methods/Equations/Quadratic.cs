@@ -26,7 +26,7 @@ namespace kursovaya.Methods.Equations
             return 2 * a * x + b;
         }
 
-        private double EvaluateReal(double x)
+        public double EvaluateReal(double x)
         {
             return a * x * x + b * x + c;
         }
