@@ -65,7 +65,6 @@ namespace kursovaya
             // Validate precision
             if (!Validate.TryParsePrecision(PrecisionBox, out double eps))
             {
-                ErrorText.Text = "Invalid precision.";
                 Graph.Model = Draw.CreateEmptyPlotModel("Invalid precision");
                 return;
             }
@@ -77,7 +76,6 @@ namespace kursovaya
 
             if (selectedMethod == null)
             {
-                ErrorText.Text = "Please select a method.";
                 Graph.Model = Draw.CreateEmptyPlotModel("No method selected");
                 return;
             }
@@ -145,34 +143,31 @@ namespace kursovaya
                 ResultBox.Text = result;
                 ComplexityText.Text = selectedMethod != "Algebraic" ? $"Iterations: {iterations}" : "Algebraic method. Iterations not applicable.";
 
-                // Plot the real-valued function regardless of method
                 if (equationFunction != null)
                 {
-                    // Dynamically adjust the plot range based on real roots
-                    double xMin = -10;
-                    double xMax = 10;
+                    double zMin = -10;
+                    double zMax = 10;
                     if (roots != null && roots.Any(r => Math.Abs(r.Imaginary) < 1e-10))
                     {
                         var realRoots = roots.Where(r => Math.Abs(r.Imaginary) < 1e-10).Select(r => r.Real).ToList();
-                        xMin = Math.Min(xMin, realRoots.Min() - 2);
-                        xMax = Math.Max(xMax, realRoots.Max() + 2);
+                        zMin = Math.Min(zMin, realRoots.Min() - 2);
+                        zMax = Math.Max(zMax, realRoots.Max() + 2);
                     }
 
                     var plotModel = Draw.CreateFunctionPlotModel(
                         equationFunction,
-                        xMinPlot: xMin,
-                        xMaxPlot: xMax,
+                        zMinPlot: zMin,
+                        zMaxPlot: zMax,
                         step: 0.01,
                         title: $"{selectedEquation} Equation Graph"
                     );
 
-                    // Add markers for real roots only
                     if (roots != null)
                     {
                         var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = 5, MarkerFill = OxyColors.Red };
                         foreach (var root in roots)
                         {
-                            if (Math.Abs(root.Imaginary) < 1e-10) // Only plot real roots
+                            if (Math.Abs(root.Imaginary) < 1e-10) 
                             {
                                 scatterSeries.Points.Add(new ScatterPoint(root.Real, equationFunction(root.Real)));
                             }

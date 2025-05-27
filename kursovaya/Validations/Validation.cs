@@ -21,13 +21,25 @@ namespace kursovaya.Validation
                            double.TryParse(t2.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out b) &&
                            double.TryParse(t3.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out c) &&
                            double.TryParse(t4.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out d);
-            if (!isValid || a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue|| d > maxCoeffValue)
+            if (a == 0)
+            {
+                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!isValid)
+            {
+                Show("Coefficients must be real numbers", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+                
+            if (a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue|| d > maxCoeffValue)
             {
                 Show($"Coefficients can't go out of bounds of an estimated {maxCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
-            if (!isValid || a < minCoeffValue || b < minCoeffValue || c < minCoeffValue || d < minCoeffValue)
+            if (a < minCoeffValue || b < minCoeffValue || c < minCoeffValue || d < minCoeffValue)
             {
                 Show($"Coefficients can't go out of bounds of an estimated {minCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -56,13 +68,25 @@ namespace kursovaya.Validation
             bool isValid = double.TryParse(t1.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out a) &&
                            double.TryParse(t2.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out b) &&
                            double.TryParse(t3.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out c);
-            if (!isValid || a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue)
+            if (a == 0)
+            {
+                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!isValid)
+            {
+                Show("Coefficients must be real numbers", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue)
             {
                 Show($"Coefficients can't go out of bounds of an estimated {maxCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
-            if (!isValid || a < minCoeffValue || b < minCoeffValue || c < minCoeffValue)
+            if (a < minCoeffValue || b < minCoeffValue || c < minCoeffValue)
             {
                 Show($"Coefficients can't go out of bounds of an estimated {minCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error); 
                 return false;
@@ -88,8 +112,8 @@ namespace kursovaya.Validation
             const double minAllowedDecimalPlaces = 1;
             const double maxAllowedDecimalPlaces = 14;
 
-            int parsedPrecisionInDP;            
-            bool isValid = int.TryParse(precisionBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out parsedPrecisionInDP);
+            int parsedPrecisionInDp;            
+            bool isValid = int.TryParse(precisionBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out parsedPrecisionInDp);
 
             if (!isValid) 
             {
@@ -97,12 +121,12 @@ namespace kursovaya.Validation
                 return false;
             }
 
-            if (parsedPrecisionInDP < minAllowedDecimalPlaces || parsedPrecisionInDP > maxAllowedDecimalPlaces)
+            if (parsedPrecisionInDp < minAllowedDecimalPlaces || parsedPrecisionInDp > maxAllowedDecimalPlaces)
             { 
                 Show("Precision is out of bounds", "Invalid precision", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-            precision = Math.Pow(10, -parsedPrecisionInDP);
+            precision = Math.Pow(10, -parsedPrecisionInDp);
             return true;
         }
 

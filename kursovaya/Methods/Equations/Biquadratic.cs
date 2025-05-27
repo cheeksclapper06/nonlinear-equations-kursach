@@ -16,7 +16,6 @@ namespace kursovaya.Methods.Equations
             this.c = c;
         }
 
-        // f(x) = az⁴ + bz² + c
         public Complex Evaluate(Complex z)
         {
             Complex z2 = z * z;
@@ -24,7 +23,6 @@ namespace kursovaya.Methods.Equations
             return a * z4 + b * z2 + c;
         }
 
-        // f'(x) = 4az³ + 2bz
         public Complex Derivative(Complex z)
         {
             Complex z2 = z * z;
@@ -32,13 +30,11 @@ namespace kursovaya.Methods.Equations
             return 4 * a * z3 + 2 * b * z;
         }
 
-        // f(z) as a real function — for Bisection Method
         public double EvaluateReal(double z)
         {
             return a * Math.Pow(z, 4) + b * Math.Pow(z, 2) + c;
         }
 
-        // Solve algebraically in complex field
         public Complex[] SolveAlgebraically()
         {
             Complex A = a;
@@ -59,8 +55,7 @@ namespace kursovaya.Methods.Equations
 
             return z;
         }
-
-        // Newton's method
+        
         public Complex SolveWithNewton(double precision, Complex initialGuess, out int iterationsCount, int maxIterations = 1000)
         {
             return Methods.NewtonMethod(
@@ -72,8 +67,7 @@ namespace kursovaya.Methods.Equations
                 maxIterations
             );
         }
-
-        // Bisection method (real roots only)
+        
         public Complex SolveWithBisection(double left, double right, double precision, out int iterationsCount, int maxIterations = 1000)
         {
             return Methods.BisectionMethod(
