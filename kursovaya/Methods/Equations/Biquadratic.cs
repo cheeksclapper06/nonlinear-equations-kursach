@@ -16,32 +16,31 @@ namespace kursovaya.Methods.Equations
             this.c = c;
         }
 
-        // f(x) = ax⁴ + bx² + c
-        public Complex Evaluate(Complex x)
+        // f(x) = az⁴ + bz² + c
+        public Complex Evaluate(Complex z)
         {
-            Complex x2 = x * x;
-            Complex x4 = x2 * x2;
-            return a * x4 + b * x2 + c;
+            Complex z2 = z * z;
+            Complex z4 = z2 * z2;
+            return a * z4 + b * z2 + c;
         }
 
-        // f'(x) = 4ax³ + 2bx
-        public Complex Derivative(Complex x)
+        // f'(x) = 4az³ + 2bz
+        public Complex Derivative(Complex z)
         {
-            Complex x2 = x * x;
-            Complex x3 = x2 * x;
-            return 4 * a * x3 + 2 * b * x;
+            Complex z2 = z * z;
+            Complex z3 = z2 * z;
+            return 4 * a * z3 + 2 * b * z;
         }
 
-        // f(x) as a real function — for Bisection Method
-        public double EvaluateReal(double x)
+        // f(z) as a real function — for Bisection Method
+        public double EvaluateReal(double z)
         {
-            return a * Math.Pow(x, 4) + b * Math.Pow(x, 2) + c;
+            return a * Math.Pow(z, 4) + b * Math.Pow(z, 2) + c;
         }
 
         // Solve algebraically in complex field
         public Complex[] SolveAlgebraically()
         {
-            // Substitute t = x^2 => at² + bt + c = 0
             Complex A = a;
             Complex B = b;
             Complex C = c;
@@ -52,13 +51,13 @@ namespace kursovaya.Methods.Equations
             Complex t1 = (-B + sqrtD) / (2 * A);
             Complex t2 = (-B - sqrtD) / (2 * A);
 
-            Complex[] x = new Complex[4];
-            x[0] = Complex.Sqrt(t1);
-            x[1] = -x[0];
-            x[2] = Complex.Sqrt(t2);
-            x[3] = -x[2];
+            Complex[] z = new Complex[4];
+            z[0] = Complex.Sqrt(t1);
+            z[1] = -z[0];
+            z[2] = Complex.Sqrt(t2);
+            z[3] = -z[2];
 
-            return x;
+            return z;
         }
 
         // Newton's method

@@ -1,12 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.Windows;
 using System.Numerics;
-using System.Windows;
-using System.Windows.Controls;
+
+using OxyPlot;
+using OxyPlot.Series;
+
 using kursovaya.Methods.Equations;
 using kursovaya.Validation;
-using kursovaya.Graph; // Make sure this is included
+using kursovaya.Graph;
+
 
 namespace kursovaya
 {
@@ -17,14 +18,21 @@ namespace kursovaya
             InitializeComponent();
             SolveButton.Click += SolveButton_Click;
             SaveButton.Click += SaveButton_Click;
+            HelpButton.Click += HelpButton_Click;
 
             QuadraticCheck.Checked += EquationTypeChanged;
+            QuadraticCheck.Unchecked += EquationTypeChanged;
             CubicCheck.Checked += EquationTypeChanged;
+            CubicCheck.Unchecked += EquationTypeChanged;
             BiquadraticCheck.Checked += EquationTypeChanged;
+            BiquadraticCheck.Unchecked += EquationTypeChanged;
 
             NewtonCheck.Checked += MethodTypeChanged;
+            NewtonCheck.Unchecked += MethodTypeChanged;
             BisectionCheck.Checked += MethodTypeChanged;
+            BisectionCheck.Unchecked += MethodTypeChanged;
             AlgebraicCheck.Checked += MethodTypeChanged;
+            AlgebraicCheck.Unchecked += MethodTypeChanged;
 
             EquationTypeChanged(null, null);
             MethodTypeChanged(null, null);
@@ -43,15 +51,22 @@ namespace kursovaya
             BisectionIntervalPanel.Visibility = BisectionCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Validate.HelpButton_Click(sender, e);
+        }
+
         private void SolveButton_Click(object sender, RoutedEventArgs args)
         {
             ErrorText.Text = "";
             ResultBox.Text = "";
             ComplexityText.Text = "";
 
-            if (!Validation.Validation.TryParseDouble(PrecisionBox, out double eps))
+            // Validate precision
+            if (!Validate.TryParsePrecision(PrecisionBox, out double eps))
             {
                 ErrorText.Text = "Invalid precision.";
+                Graph.Model = Draw.CreateEmptyPlotModel("Invalid precision");
                 return;
             }
 
@@ -63,12 +78,21 @@ namespace kursovaya
             if (selectedMethod == null)
             {
                 ErrorText.Text = "Please select a method.";
+                Graph.Model = Draw.CreateEmptyPlotModel("No method selected");
+                return;
+            }
+
+            int decimalPlaces = int.Parse(PrecisionBox.Text);
+            if (decimalPlaces < 1 || decimalPlaces > 14)
+            {
+                Graph.Model = Draw.CreateEmptyPlotModel("Invalid precision");
                 return;
             }
 
             int iterations = 0;
             string result = "";
-            Func<double, double> equationFunction = null; // This will hold the function to be graphed
+            Func<double, double> equationFunction = null;
+            Complex[] roots = null;
 
             try
             {
@@ -78,43 +102,42 @@ namespace kursovaya
                 else if (BiquadraticCheck.IsChecked == true) selectedEquation = "biquadratic";
                 else
                 {
-                    ErrorText.Text = "Please select an equation type.";
+                    Graph.Model = Draw.CreateEmptyPlotModel("No equation type selected");
                     return;
                 }
-
-                int dp = Validation.Validation.GetDecimalPlaces(eps);
 
                 switch (selectedEquation)
                 {
                     case "quadratic":
-                        if (!Validation.Validation.TryParse3Coeffs(CoeffBox1Quadratic, CoeffBox2Quadratic, CoeffBox3Quadratic, out double a1, out double b1, out double c1))
+                        if (!Validate.TryParse3Coeffs(CoeffBox1Quadratic, CoeffBox2Quadratic, CoeffBox3Quadratic, out double a1, out double b1, out double c1))
                         {
+                            Graph.Model = Draw.CreateEmptyPlotModel("Invalid coefficients");
                             return;
                         }
                         var quadratic = new Quadratic(a1, b1, c1);
-                        result = SolveEquation(quadratic, selectedMethod, eps, dp, out iterations);
-                        // Directly assign the EvaluateReal method
+                        result = SolveEquation(quadratic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
                         equationFunction = quadratic.EvaluateReal;
                         break;
 
                     case "cubic":
-                        if (!Validation.Validation.TryParse4Coeffs(CoeffBox1Cubic, CoeffBox2Cubic, CoeffBox3Cubic, CoeffBox4Cubic, out double a2, out double b2, out double c2, out double d2))
+                        if (!Validate.TryParse4Coeffs(CoeffBox1Cubic, CoeffBox2Cubic, CoeffBox3Cubic, CoeffBox4Cubic, out double a2, out double b2, out double c2, out double d2))
                         {
+                            Graph.Model = Draw.CreateEmptyPlotModel("Invalid coefficients");
                             return;
                         }
                         var cubic = new Cubic(a2, b2, c2, d2);
-                        result = SolveEquation(cubic, selectedMethod, eps, dp, out iterations);
-                        // Directly assign the EvaluateReal method
+                        result = SolveEquation(cubic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
                         equationFunction = cubic.EvaluateReal;
                         break;
 
                     case "biquadratic":
-                        if (!Validation.Validation.TryParse3Coeffs(CoeffBox1Biquadratic, CoeffBox2Biquadratic, CoeffBox3Biquadratic, out double a3, out double b3, out double c3))
+                        if (!Validate.TryParse3Coeffs(CoeffBox1Biquadratic, CoeffBox2Biquadratic, CoeffBox3Biquadratic, out double a3, out double b3, out double c3))
                         {
-                           return;
+                            Graph.Model = Draw.CreateEmptyPlotModel("Invalid coefficients");
+                            return;
                         }
                         var biquadratic = new Biquadratic(a3, b3, c3);
-                        result = SolveEquation(biquadratic, selectedMethod, eps, dp, out iterations);
+                        result = SolveEquation(biquadratic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
                         equationFunction = biquadratic.EvaluateReal;
                         break;
                 }
@@ -122,47 +145,84 @@ namespace kursovaya
                 ResultBox.Text = result;
                 ComplexityText.Text = selectedMethod != "Algebraic" ? $"Iterations: {iterations}" : "Algebraic method. Iterations not applicable.";
 
-                // Draw the graph after the solution is calculated
+                // Plot the real-valued function regardless of method
                 if (equationFunction != null)
                 {
-                    // Make sure you have a Canvas named 'GraphCanvas' in your XAML
-                    GraphP.Draw(GraphCanvas, equationFunction);
+                    // Dynamically adjust the plot range based on real roots
+                    double xMin = -10;
+                    double xMax = 10;
+                    if (roots != null && roots.Any(r => Math.Abs(r.Imaginary) < 1e-10))
+                    {
+                        var realRoots = roots.Where(r => Math.Abs(r.Imaginary) < 1e-10).Select(r => r.Real).ToList();
+                        xMin = Math.Min(xMin, realRoots.Min() - 2);
+                        xMax = Math.Max(xMax, realRoots.Max() + 2);
+                    }
+
+                    var plotModel = Draw.CreateFunctionPlotModel(
+                        equationFunction,
+                        xMinPlot: xMin,
+                        xMaxPlot: xMax,
+                        step: 0.01,
+                        title: $"{selectedEquation} Equation Graph"
+                    );
+
+                    // Add markers for real roots only
+                    if (roots != null)
+                    {
+                        var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = 5, MarkerFill = OxyColors.Red };
+                        foreach (var root in roots)
+                        {
+                            if (Math.Abs(root.Imaginary) < 1e-10) // Only plot real roots
+                            {
+                                scatterSeries.Points.Add(new ScatterPoint(root.Real, equationFunction(root.Real)));
+                            }
+                        }
+                        plotModel.Series.Add(scatterSeries);
+                    }
+                    Graph.Model = plotModel;
+                }
+                else
+                {
+                    Graph.Model = Draw.CreateEmptyPlotModel("No function to plot");
                 }
             }
             catch (Exception ex)
             {
                 ErrorText.Text = $"Error: {ex.Message}";
+                Graph.Model = Draw.CreateEmptyPlotModel("Error in plotting function");
             }
         }
 
-        private string SolveEquation(dynamic equation, string method, double eps, int decimalPlaces, out int iterations)
+        private string SolveEquation(dynamic equation, string method, double eps, int decimalPlaces, out int iterations, out Complex[] roots)
         {
-            iterations = 0; // Initialize iterations before the switch
+            iterations = 0;
+            roots = null;
             switch (method)
             {
                 case "Newton":
-                    if (!Validation.Validation.TryParseDouble(InitialGuessBox, out double guess))
+                    if (!Validate.TryParseComplexInitialPoint(InitialGuessBoxReal, InitialGuessBoxImaginary, out Complex guess))
                     {
                         throw new ArgumentException("Invalid initial guess.");
                     }
-                    return Validation.Validation.FormatComplex(
-                        equation.SolveWithNewton(eps, new Complex(guess, 0), out iterations),
-                        decimalPlaces);
+                    var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations);
+                    roots = new Complex[] { newtonRoot };
+                    return Validate.FormatComplex(newtonRoot, decimalPlaces);
 
                 case "Bisection":
-                    if (!Validation.Validation.TryParseDouble(LeftBoundBox, out double left) ||
-                        !Validation.Validation.TryParseDouble(RightBoundBox, out double right))
+                    if (!Validate.TryParseInterval(LeftBoundBox, RightBoundBox, out double left, out double right))
                     {
                         throw new ArgumentException("Invalid interval bounds.");
                     }
-                    return Validation.Validation.FormatComplex(equation.SolveWithBisection(left, right, eps, out iterations), decimalPlaces);
+                    var bisectionRoot = equation.SolveWithBisection(left, right, eps, out iterations);
+                    roots = new Complex[] { bisectionRoot };
+                    return Validate.FormatComplex(bisectionRoot, decimalPlaces);
 
                 case "Algebraic":
-                    Complex[] roots = equation.SolveAlgebraically();
+                    roots = equation.SolveAlgebraically();
                     string result = "";
                     for (int i = 0; i < roots.Length; i++)
                     {
-                        result += $"Root {i + 1}: {Validation.Validation.FormatComplex(roots[i], decimalPlaces)}\n";
+                        result += $"z{i + 1}: {Validate.FormatComplex(roots[i], decimalPlaces)}\n";
                     }
                     return result;
 
@@ -175,12 +235,13 @@ namespace kursovaya
         {
             try
             {
-                File.WriteAllText("solution.txt", ResultBox.Text);
+                System.IO.File.WriteAllText("solution.txt", ResultBox.Text);
                 MessageBox.Show("Saved to solution.txt", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 ErrorText.Text = $"File save error: {ex.Message}";
+                Graph.Model = Draw.CreateEmptyPlotModel("Error saving file");
             }
         }
     }

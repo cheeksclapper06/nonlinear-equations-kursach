@@ -1,130 +1,141 @@
 ﻿using System;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Linq; // Add this for Min/Max operations
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
 namespace kursovaya.Graph
 {
-    public static class GraphP
+    public static class Draw
     {
-        public static void Draw(Canvas canvas, Func<double, double> function)
+        /// <summary>
+        /// Создает и настраивает PlotModel для отображения графика действительной функции.
+        /// </summary>
+        /// <param name="function">Функция для построения графика (Func<double, double>).</param>
+        /// <param name="xMinPlot">Минимальное значение X для построения.</param>
+        /// <param name="xMaxPlot">Максимальное значение X для построения.</param>
+        /// <param name="step">Шаг для вычисления точек функции.</param>
+        /// <param name="title">Заголовок графика.</param>
+        /// <returns>Готовая PlotModel для привязки к PlotView.</returns>
+        public static PlotModel CreateFunctionPlotModel(
+            Func<double, double> function,
+            double xMinPlot = -10,
+            double xMaxPlot = 10,
+            double step = 0.01,
+            string title = "График функции f(x)")
         {
-            double width = canvas.ActualWidth;
-            double height = canvas.ActualHeight;
-
-            if (width <= 0 || height <= 0) return; // Prevent division by zero or negative dimensions
-
-            canvas.Children.Clear();
-
-            // --- Define the X-axis plotting range ---
-            double xMinPlot = -10; // Fixed X-axis start
-            double xMaxPlot = 10;  // Fixed X-axis end
-            double xRange = xMaxPlot - xMinPlot;
-
-            // Calculate initial scaleX based on the desired X-axis plot range
-            double scaleX = width / xRange;
-
-            // --- Determine Y-axis dynamic scaling ---
-            double yMin = double.MaxValue;
-            double yMax = double.MinValue;
-            const double step = 0.05; // Use the same step as in the drawing loop
-
-            // First pass: Calculate min and max y values for the given x range
-            // Also, consider a slightly larger range to ensure points aren't exactly on the edge
-            // and to handle cases where min/max are at the edges of the x range.
-            for (double x = xMinPlot; x <= xMaxPlot; x += step)
+            var model = new PlotModel
             {
-                try
-                {
-                    double y = function(x);
-                    if (!double.IsNaN(y) && !double.IsInfinity(y)) // Ignore invalid numbers
-                    {
-                        if (y < yMin) yMin = y;
-                        if (y > yMax) yMax = y;
-                    }
-                }
-                catch
-                {
-                    // Handle potential exceptions during function evaluation (e.g., division by zero)
-                    // If an exception occurs, this point is skipped for min/max calculation.
-                }
+                Title = title,
+                Background = OxyColors.Gray, // Set black background
+                TitleColor = OxyColors.White  // White title for visibility
+            };
+
+            // 1. Создаем серию данных для функции
+            var lineSeries = new FunctionSeries(function, xMinPlot, xMaxPlot, step, "f(x)")
+            {
+                Color = OxyColors.LightGreen 
+            };
+            model.Series.Add(lineSeries);
+
+            // 2. Вычисляем y-интервал, включая y = 0
+            double yMinFunction = lineSeries.MinY;
+            double yMaxFunction = lineSeries.MaxY;
+
+            // Учитываем y-интерцепт (f(0)), если x = 0 находится в диапазоне
+            double yIntercept = function(0);
+            yMinFunction = Math.Min(yMinFunction, yIntercept);
+            yMaxFunction = Math.Max(yMaxFunction, yIntercept);
+
+            // Убедимся, что y = 0 включен в диапазон (чтобы видеть пересечение с x-осью)
+            yMinFunction = Math.Min(yMinFunction, 0);
+            yMaxFunction = Math.Max(yMaxFunction, 0);
+
+            // Если функция константа или очень плоская
+            if (Math.Abs(yMaxFunction - yMinFunction) < 1e-9)
+            {
+                yMinFunction -= 1;
+                yMaxFunction += 1;
             }
 
-            // Handle cases where yMin/yMax might not have been updated (e.g., function always throws or returns NaN)
-            if (yMin == double.MaxValue || yMax == double.MinValue)
+            // Добавляем отступ 10%
+            double yPadding = (yMaxFunction - yMinFunction) * 0.1;
+            yMinFunction -= yPadding;
+            yMaxFunction += yPadding;
+
+            // 3. Настраиваем оси X (горизонтальная)
+            var xAxis = new LinearAxis
             {
-                // Fallback to a default reasonable range if no valid Y values found
-                yMin = -10;
-                yMax = 10;
-            }
+                Position = AxisPosition.Bottom,
+                Title = "X",
+                Minimum = xMinPlot,
+                Maximum = xMaxPlot,
+                Key = "XAxis",
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Dot,
+                AxislineStyle = LineStyle.Solid,
+                AxislineColor = OxyColors.White,      // White axis line for visibility
+                TitleColor = OxyColors.White,         // White axis title
+                TextColor = OxyColors.White,          // White tick labels
+                TicklineColor = OxyColors.White,      // White tick marks
+                MajorGridlineColor = OxyColors.Gray,  // Gray grid lines for contrast
+                MinorGridlineColor = OxyColors.DarkGray
+            };
+            model.Axes.Add(xAxis);
 
-            // Add padding to the Y-axis range
-            double yPadding = (yMax - yMin) * 0.1; // 10% padding
-            yMin -= yPadding;
-            yMax += yPadding;
-
-            if (Math.Abs(yMax - yMin) < 1e-9) // Prevent division by zero if yMin and yMax are almost identical (e.g., y = constant)
+            // 4. Настраиваем оси Y (вертикальная)
+            var yAxis = new LinearAxis
             {
-                yMin -= 1; // Expand the range slightly
-                yMax += 1;
-            }
+                Position = AxisPosition.Left,
+                Title = "Y",
+                Minimum = yMinFunction,
+                Maximum = yMaxFunction,
+                Key = "YAxis",
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Dot,
+                AxislineStyle = LineStyle.Solid,
+                AxislineColor = OxyColors.White,
+                TitleColor = OxyColors.White,
+                TextColor = OxyColors.White,
+                TicklineColor = OxyColors.White,
+                MajorGridlineColor = OxyColors.Gray,
+                MinorGridlineColor = OxyColors.DarkGray
+            };
+            model.Axes.Add(yAxis);
 
-            double yRange = yMax - yMin;
-            double scaleY = height / yRange;
+            // 5. Добавляем сетку на x = 0 и y = 0
+            xAxis.MajorStep = (xMaxPlot - xMinPlot) / 10;
+            yAxis.MajorStep = (yMaxFunction - yMinFunction) / 10;
 
-            // Calculate the Y-coordinate of the X-axis (where Y=0 on the graph)
-            // This is relative to the canvas's top-left corner (0,0)
-            double centerY = height + yMin * scaleY; // Adjust based on dynamic yMin
+            // 6. Обновляем модель
+            model.InvalidatePlot(true);
 
-            // Calculate the X-coordinate of the Y-axis (where X=0 on the graph)
-            double centerX = -xMinPlot * scaleX; // Adjust based on fixed xMinPlot
+            return model;
+        }
 
-            // --- Draw Axes ---
-            // Y-axis (x=0)
-            canvas.Children.Add(new Line
+        public static PlotModel CreateEmptyPlotModel(string message = "График не доступен для данного метода или функции")
+        {
+            var model = new PlotModel
             {
-                X1 = centerX, Y1 = 0, X2 = centerX, Y2 = height,
-                Stroke = Brushes.Gray,
-                StrokeThickness = 0.5 // Thinner lines for axes
+                Title = message,
+                Background = OxyColors.Black, // Black background for empty plot
+                TitleColor = OxyColors.White  // White title for visibility
+            };
+            // Добавляем оси, чтобы не было пустого пространства
+            model.Axes.Add(new LinearAxis
+            {
+                Position = AxisPosition.Bottom,
+                IsAxisVisible = false,
+                MajorGridlineColor = OxyColors.Gray,
+                MinorGridlineColor = OxyColors.DarkGray
             });
-            // X-axis (y=0)
-            canvas.Children.Add(new Line
+            model.Axes.Add(new LinearAxis
             {
-                X1 = 0, Y1 = centerY, X2 = width, Y2 = centerY,
-                Stroke = Brushes.Gray,
-                StrokeThickness = 0.5 // Thinner lines for axes
+                Position = AxisPosition.Left,
+                IsAxisVisible = false,
+                MajorGridlineColor = OxyColors.Gray,
+                MinorGridlineColor = OxyColors.DarkGray
             });
-
-            // --- Draw the function plot ---
-            double prevXGraph = centerX + xMinPlot * scaleX;
-            double prevYGraph = centerY - function(xMinPlot) * scaleY; // Transform Y value to canvas coordinates
-
-            for (double x = xMinPlot + step; x <= xMaxPlot; x += step)
-            {
-                double currentY = function(x);
-
-                // Transform real world coordinates to canvas coordinates
-                double currentXGraph = centerX + x * scaleX;
-                double currentYGraph = centerY - currentY * scaleY; // Y-axis in WPF goes down
-
-                // Only draw if values are finite to prevent drawing lines to infinity
-                if (!double.IsNaN(prevYGraph) && !double.IsInfinity(prevYGraph) &&
-                    !double.IsNaN(currentYGraph) && !double.IsInfinity(currentYGraph))
-                {
-                    canvas.Children.Add(new Line
-                    {
-                        X1 = prevXGraph,
-                        Y1 = prevYGraph,
-                        X2 = currentXGraph,
-                        Y2 = currentYGraph,
-                        Stroke = Brushes.Lime,
-                        StrokeThickness = 1
-                    });
-                }
-                prevXGraph = currentXGraph;
-                prevYGraph = currentYGraph;
-            }
+            return model;
         }
     }
 }

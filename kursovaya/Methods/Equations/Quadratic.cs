@@ -16,30 +16,30 @@ namespace kursovaya.Methods.Equations
             this.c = c;
         }
 
-        public Complex Evaluate(Complex x)
+        public Complex Evaluate(Complex z)
         {
-            return a * x * x + b * x + c;
+            return a * Complex.Pow(z, 2) + b * z + c;
         }
 
-        public Complex Derivative(Complex x)
+        public Complex Derivative(Complex z)
         {
-            return 2 * a * x + b;
+            return 2 * a * z + b;
         }
 
-        public double EvaluateReal(double x)
+        public double EvaluateReal(double z)
         {
-            return a * x * x + b * x + c;
+            return a * double.Pow(z, 2) + b * z + c;
         }
 
         public Complex[] SolveAlgebraically()
         {
-            Complex discriminant = b * b - 4 * a * c;
+            Complex discriminant = double.Pow(b, 2) - 4 * a * c;
             Complex sqrtD = Complex.Sqrt(discriminant);
 
-            Complex x1 = (-b + sqrtD) / (2 * a);
-            Complex x2 = (-b - sqrtD) / (2 * a);
+            Complex z1 = (-b + sqrtD) / (2 * a);
+            Complex z2 = (-b - sqrtD) / (2 * a);
 
-            return new[] { x1, x2 };
+            return new[] { z1, z2 };
         }
 
         public Complex SolveWithNewton(double precision, Complex initialGuess, out int iterationsCount, int maxIterations = 1000)

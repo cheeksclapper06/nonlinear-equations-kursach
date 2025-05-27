@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
-
+using System.Windows;
+using static System.Windows.MessageBox;
 namespace kursovaya.Methods
 {
     public static class Methods
@@ -12,33 +13,40 @@ namespace kursovaya.Methods
             out int iterations,
             int maxIterations = 1000)
         {
-            Complex x = initialGuess;
+            Complex z = initialGuess;
             iterations = 0;
-
-            while (iterations < maxIterations)
-            {
-                Complex fx = function(x);
-                Complex dfx = derivative(x);
-
-                if (Complex.Abs(dfx) < 1e-12)
+            try 
+            { 
+                while (iterations < maxIterations)
                 {
-                    throw new DivideByZeroException("Derivative is too small.");
+                    Complex fz = function(z);
+                    Complex dfz = derivative(z);
+
+                    if (Complex.Abs(dfz) < 1e-12)
+                    {
+                        throw new DivideByZeroException("Derivative is too small.");
+                    }
+
+                    Complex zNew = z - fz / dfz;
+
+                    if (Complex.Abs(zNew - z) < precision)
+                    {
+                        return zNew;
+                    }
+
+                    z = zNew;
+                    iterations++;
                 }
 
-                Complex xNew = x - fx / dfx;
-
-                if (Complex.Abs(xNew - x) < precision)
-                {
-                    return xNew;
-                }
-
-                x = xNew;
-                iterations++;
+                throw new Exception("Newton method did not converge.");
             }
-
-            throw new Exception("Newton method did not converge.");
+            catch (Exception ex)
+            {
+                Show(ex.Message, "Newton method warning", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
-
+        
         public static Complex BisectionMethod(
             Func<double, double> function,
             double left,
@@ -47,36 +55,46 @@ namespace kursovaya.Methods
             out int iterations,
             int maxIterations = 1000)
         {
-            if (function(left) * function(right) > 0)
-            {
-                throw new ArgumentException("Function must have opposite signs at the endpoints.");
-            }
-
             double mid = 0;
             iterations = 0;
-            while ((right - left) / 2.0 > precision && iterations < maxIterations)
+
+            try
             {
-                mid = (left + right) / 2.0;
-                double fMid = function(mid);
-
-                if (Math.Abs(fMid) < precision)
+                if (function(left) * function(right) > 0)
                 {
-                    break;
+                    throw new ArgumentException("Function must have opposite signs at the endpoints.");
                 }
+            
+                while ((right - left) / 2.0 > precision && iterations < maxIterations)
+                {
+                    mid = (left + right) / 2.0;
+                    double fMid = function(mid);
+
+                    if (Math.Abs(fMid) < precision)
+                    {
+                        break;
+                    }
                 
-                if (function(left) * fMid < 0)
-                {
-                    right = mid;
-                }
-                else
-                {
-                    left = mid;
+                    if (function(left) * fMid < 0)
+                    {
+                        right = mid;
+                    }
+                    else
+                    {
+                        left = mid;
+                    }
+
+                    iterations++;
                 }
 
-                iterations++;
+                return new Complex(mid, 0);
             }
-
-            return new Complex(mid, 0);
+            catch(Exception ex)
+            {
+                Show(ex.Message, "Bisection method warning", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
+           
         }
     }
 }

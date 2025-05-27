@@ -31,3 +31,6 @@ C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovay
 C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovaya_Content.g.cs
 C:\Users\User\source\repos\kursovaya\kursovaya\obj\Debug\net9.0-windows\kursovaya.csproj.Up2Date
 C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\Microsoft.Web.WebView2.DevToolsProtocolExtension.dll
+C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.dll
+C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.Wpf.dll
+C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.Wpf.Shared.dll
