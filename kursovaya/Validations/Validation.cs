@@ -190,15 +190,9 @@ namespace kursovaya.Validations
                 out imag 
             );
 
-            if (!isRealPartValid || !isImaginaryPartValid || Math.Abs(real) > 10000 || Math.Abs(imag) > 10000)
+            if (!isRealPartValid || !isImaginaryPartValid)
             {
-                Show("Complex number parts are out of bounds", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
-            if (!isRealPartValid || !isImaginaryPartValid || Math.Abs(real) < -10000 || Math.Abs(imag) < -10000)
-            {
-                Show("Complex number parts are out of bounds", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
+                Show("Complex number parts must be real numbers", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
@@ -207,7 +201,19 @@ namespace kursovaya.Validations
                 Show("Complex number parts have too many decimal places", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            
+            if (real > 10000 || imag > 10000)
+            {
+                Show("Complex number parts are out of bounds", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
+            if (real < -10000 || imag < -10000)
+            {
+                Show("Complex number parts are out of bounds", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
             if (double.IsNaN(real) || double.IsNaN(imag))
             {
                 Show("Initial guess cannot hold NaN values", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -230,20 +236,27 @@ namespace kursovaya.Validations
             bool isLeftValid = double.TryParse(leftBound.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out left);
             bool isRightValid = double.TryParse(rightBound.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out right);
 
-            if (!isLeftValid || !isRightValid || Math.Abs(left) > 10000 || Math.Abs(right) > 10000)
+            if (!isLeftValid || !isRightValid)
             {
-                Show("Interval bounds are out of bounds", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            if (!isLeftValid || !isRightValid || Math.Abs(left) < -10000 || Math.Abs(right) < -10000)
-            {
-                Show("Interval bounds are out of bounds", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
+                Show("Interval bounds must be real numbers", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
             if (HasTooManyDecimalPlaces(leftBound.Text) || HasTooManyDecimalPlaces(rightBound.Text))
             {
                 Show("Interval bounds have too many decimal places", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (left > 10000 || right > 10000)
+            {
+                Show("Interval bounds are out of bounds", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (left < -10000 || right < -10000)
+            {
+                Show("Interval bounds are out of bounds", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
