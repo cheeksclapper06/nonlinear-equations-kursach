@@ -9,6 +9,19 @@ namespace kursovaya.Validations
 
     public static class Validate
     {
+        public static bool HasTooManyDecimalPlaces(string input, int maxDecimalPlaces = 14)
+        {
+            if (!decimal.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+            {
+                return false;
+            }
+
+            int[] bits = decimal.GetBits(value);
+            int scale = (bits[3] >> 16) & 0xFF;
+
+            return scale > maxDecimalPlaces;
+        }
+        
         public static bool TryParse4Coeffs(TextBox t1, TextBox t2, TextBox t3, TextBox t4, out double a, out double b, out double c, out double d)
         {
             a = 0; b = 0; c = 0; d = 0;
@@ -19,27 +32,33 @@ namespace kursovaya.Validations
                            double.TryParse(t2.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out b) &&
                            double.TryParse(t3.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out c) &&
                            double.TryParse(t4.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out d);
-            if (a == 0)
-            {
-                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
             if (!isValid)
             {
                 Show("Coefficients must be real numbers", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-                
+            
+            if (HasTooManyDecimalPlaces(t1.Text) || HasTooManyDecimalPlaces(t2.Text) || HasTooManyDecimalPlaces(t3.Text) || HasTooManyDecimalPlaces(t4.Text))
+            {
+                Show("Coefficients have too many decimal places", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (a == 0)
+            {
+                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
             if (a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue|| d > maxCoeffValue)
             {
-                Show($"Coefficients can't go out of bounds of an estimated {maxCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                Show($"Coefficients can't go out of bounds of estimated values", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             if (a < minCoeffValue || b < minCoeffValue || c < minCoeffValue || d < minCoeffValue)
             {
-                Show($"Coefficients can't go out of bounds of an estimated {minCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                Show($"Coefficients can't go out of bounds of estimated values", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
@@ -62,31 +81,37 @@ namespace kursovaya.Validations
             a = 0; b = 0; c = 0;
             double maxCoeffValue = 10000;
             double minCoeffValue = -10000;
-
+            
             bool isValid = double.TryParse(t1.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out a) &&
                            double.TryParse(t2.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out b) &&
                            double.TryParse(t3.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out c);
-            if (a == 0)
-            {
-                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
             if (!isValid)
             {
                 Show("Coefficients must be real numbers", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
+            if (HasTooManyDecimalPlaces(t1.Text) || HasTooManyDecimalPlaces(t2.Text) || HasTooManyDecimalPlaces(t3.Text))
+            {
+                Show("Coefficients have too many decimal places", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (a == 0)
+            {
+                Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
             if (a > maxCoeffValue || b > maxCoeffValue || c > maxCoeffValue)
             {
-                Show($"Coefficients can't go out of bounds of an estimated {maxCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                Show("Coefficients can't go out of bounds of estimated values", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             if (a < minCoeffValue || b < minCoeffValue || c < minCoeffValue)
             {
-                Show($"Coefficients can't go out of bounds of an estimated {minCoeffValue} value", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error); 
+                Show("Coefficients can't go out of bounds of estimated values", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error); 
                 return false;
             }
            
@@ -109,8 +134,8 @@ namespace kursovaya.Validations
             precision = 0;
             const double minAllowedDecimalPlaces = 1;
             const double maxAllowedDecimalPlaces = 14;
-
-            int parsedPrecisionInDp;            
+            
+            int parsedPrecisionInDp;    
             bool isValid = int.TryParse(precisionBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out parsedPrecisionInDp);
 
             if (!isValid) 
@@ -118,10 +143,28 @@ namespace kursovaya.Validations
                 Show("Precision must be a valid integer", "Invalid precision", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            
+            if (HasTooManyDecimalPlaces(precisionBox.Text))
+            {
+                Show("Precision has too many decimal places", "Invalid precision", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
             if (parsedPrecisionInDp < minAllowedDecimalPlaces || parsedPrecisionInDp > maxAllowedDecimalPlaces)
             { 
                 Show("Precision is out of bounds", "Invalid precision", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (double.IsNaN(parsedPrecisionInDp) )
+            {
+                Show("Precision cannot be NaN", "Invalid precision", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (double.IsInfinity(parsedPrecisionInDp))
+            {
+                Show("Coefficient cannot reach infinite values", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             precision = Math.Pow(10, -parsedPrecisionInDp);
@@ -132,7 +175,7 @@ namespace kursovaya.Validations
         {
             double real, imag;
             complexNumber = new Complex(0, 0);
-
+            
             bool isRealPartValid = double.TryParse(
                 realPart.Text,
                 NumberStyles.Any,
@@ -158,6 +201,12 @@ namespace kursovaya.Validations
                 Show("Complex number parts are out of bounds", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            
+            if (HasTooManyDecimalPlaces(realPart.Text) || HasTooManyDecimalPlaces(imagPart.Text))
+            {
+                Show("Complex number parts have too many decimal places", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
             if (double.IsNaN(real) || double.IsNaN(imag))
             {
@@ -177,7 +226,7 @@ namespace kursovaya.Validations
         public static bool TryParseInterval(TextBox leftBound, TextBox rightBound, out double left, out double right)
         {
             left = 0; right = 0;
-
+            
             bool isLeftValid = double.TryParse(leftBound.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out left);
             bool isRightValid = double.TryParse(rightBound.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out right);
 
@@ -191,6 +240,13 @@ namespace kursovaya.Validations
                 Show("Interval bounds are out of bounds", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            
+            if (HasTooManyDecimalPlaces(leftBound.Text) || HasTooManyDecimalPlaces(rightBound.Text))
+            {
+                Show("Interval bounds have too many decimal places", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
             if (left >= right)
             {
                 Show("Left bound must be less than right bound", "Invalid interval", MessageBoxButton.OK, MessageBoxImage.Error);

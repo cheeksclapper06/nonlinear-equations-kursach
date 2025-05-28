@@ -215,7 +215,7 @@ namespace kursovaya
 
                     if (roots != null)
                     {
-                        var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = 5, MarkerFill = OxyColors.Red };
+                        var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = 5, MarkerFill = OxyColors.LightCoral };
                         foreach (var root in roots)
                         {
                             if (Math.Abs(root.Imaginary) < 1e-10) 

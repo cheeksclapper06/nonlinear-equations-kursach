@@ -16,13 +16,13 @@ namespace kursovaya.Graph
             var model = new PlotModel
             {
                 Title = title,
-                Background = OxyColors.DarkGray, 
+                Background = OxyColor.FromArgb(255, 30, 30, 30),
                 TitleColor = OxyColors.White  
             };
 
             var lineSeries = new FunctionSeries(function, zMinPlot, zMaxPlot, step, "f(z)")
             {
-                Color = OxyColors.LightGreen 
+                Color = OxyColors.LightBlue
             };
             model.Series.Add(lineSeries);
 
