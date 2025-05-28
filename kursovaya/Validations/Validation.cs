@@ -230,40 +230,5 @@ namespace kursovaya.Validations
            
             return $"z = {realPartString} {(c.Imaginary >= 0 ? "+" : "-")} {imagPartString}i";
         }
-        
-        public static void HelpButton_Click(object sender, RoutedEventArgs e)
-        {
-            string instructions =
-                "Welcome to the Complex Nonlinear Equation Solver 2000!\n\n" +
-                "1. Choose Equation Type:\n" +
-                "   - Select Quadratic (az² + bz + c = 0), Cubic (az³ + bz² + cz + d = 0), or Biquadratic (az⁴ + bz² + c = 0).\n" +
-                "   - Enter the coefficients in the respective fields. Values should be between -10000 and 10000.\n\n" +
-                "2. Enter Initial Guess (for Newton's method):\n" +
-                "   - If using Newton's method, provide a complex initial guess (real part and imaginary part).\n" +
-                "   - This guess helps the algorithm start finding a root.\n\n" +
-                "3. Enter Interval (for Bisection method):\n" +
-                "   - If using the Bisection method, define a real interval [Left Bound, Right Bound].\n" +
-                "   - The function must change sign within this interval for the method to work (f(Left) * f(Right) < 0).\n\n" +
-                "4. Enter Precision ε:\n" +
-                "   - Specify the desired precision for the solution. This value should be between 1e-14 and 0.1.\n\n" +
-                "5. Choose the Method:\n" +
-                "   - **Newton:** An iterative method for finding roots, can find complex roots if the initial guess is complex.\n" +
-                "   - **Bisection:** A robust method for finding real roots within a given interval. Requires the function to change sign.\n" +
-                "   - **Algebraic:** Directly calculates roots using algebraic formulas (available for quadratic, cubic, and biquadratic equations).\n\n" +
-                "6. Solve:**\n" +
-                "   - Click the 'Solve' button to calculate the roots based on your inputs.\n" +
-                "   - The solution(s) will appear in the 'Solution' box.\n" +
-                "   - 'Algorithm complexity' will show the number of iterations (for iterative methods).\n" +
-                "   - Errors will be displayed in the 'Error' text area.\n\n" +
-                "**7. Graph:**\n" +
-                "   - A graph of the real part of the function will be displayed on the right for Bisection method and for Newton's method when the initial guess is primarily real.\n\n" +
-                "**8. Save Result:**\n" +
-                "   - Click 'Save Result' to save the solution(s) to a 'solution.txt' file.\n\n" +
-                "**Note:** For cubic equations, it is highly recommended to use the Algebraic method as iterative methods might struggle with convergence or finding all roots without proper initial guesses.\n" +
-                "For complex roots, Newton's method with a complex initial guess is required.\n" +
-                "The Bisection method only finds real roots within a given interval.";
-
-            Show(instructions, "How to Use - Instructions", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
     }
 }
