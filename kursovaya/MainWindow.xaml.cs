@@ -1,13 +1,11 @@
 ﻿using System.Windows;
 using System.Numerics;
-
 using OxyPlot;
 using OxyPlot.Series;
 
 using kursovaya.Methods.Equations;
-using kursovaya.Validation;
+using kursovaya.Validations;
 using kursovaya.Graph;
-
 
 namespace kursovaya
 {
@@ -38,38 +36,77 @@ namespace kursovaya
             MethodTypeChanged(null, null);
         }
 
-        private void EquationTypeChanged(object sender, RoutedEventArgs e)
+        private void EquationTypeChanged(object? sender, RoutedEventArgs? e)
         {
             QuadraticCoefficients.Visibility = QuadraticCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             CubicCoefficients.Visibility = CubicCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             BiquadraticCoefficients.Visibility = BiquadraticCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void MethodTypeChanged(object sender, RoutedEventArgs e)
+        private void MethodTypeChanged(object? sender, RoutedEventArgs? e)
         {
             InitialGuessPanel.Visibility = NewtonCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             BisectionIntervalPanel.Visibility = BisectionCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        public interface IPolynomial
         {
-            Validate.HelpButton_Click(sender, e);
+            Complex SolveWithNewton(double eps, Complex z0, out int iters, out TimeSpan elapsed, int maxIters = 1000);
+            Complex SolveWithBisection(double left, double right, double eps, out int iters, out TimeSpan elapsed, int maxIters = 1000);
+            Complex[] SolveAlgebraically(out TimeSpan elapsed);
         }
+        
+        private string SolveEquation(IPolynomial equation, string method, double eps, int decimalPlaces, out int iterations, out TimeSpan elapsed, out Complex[]? roots)
+        {
+            iterations = 0;
+            roots = null;
+            
+            switch (method)
+            {
+                case "Newton":
+                    if (!Validate.TryParseComplexInitialPoint(InitialGuessBoxReal, InitialGuessBoxImaginary, out Complex guess))
+                    {
+                        throw new ArgumentException("Invalid initial guess.");
+                    }
+                    var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations, out elapsed);
+                    roots = [newtonRoot];
+                    return Validate.FormatComplex(newtonRoot, decimalPlaces);
 
+                case "Bisection":
+                    if (!Validate.TryParseInterval(LeftBoundBox, RightBoundBox, out double left, out double right))
+                    {
+                        throw new ArgumentException("Invalid interval bounds.");
+                    }
+                    var bisectionRoot = equation.SolveWithBisection(left, right, eps, out iterations, out elapsed);
+                    roots = [bisectionRoot];
+                    return Validate.FormatComplex(bisectionRoot, decimalPlaces);
+
+                case "Algebraic":
+                    roots = equation.SolveAlgebraically(out elapsed);
+                    string result = "";
+                    for (int i = 0; i < roots.Length; i++)
+                    {
+                        result += $"z{i + 1}: {Validate.FormatComplex(roots[i], decimalPlaces)}\n";
+                    }
+                    return result;
+
+                default:
+                    throw new ArgumentException("Invalid method.");
+            }
+        }
+        
         private void SolveButton_Click(object sender, RoutedEventArgs args)
         {
-            ErrorText.Text = "";
             ResultBox.Text = "";
             ComplexityText.Text = "";
 
-            // Validate precision
             if (!Validate.TryParsePrecision(PrecisionBox, out double eps))
             {
                 Graph.Model = Draw.CreateEmptyPlotModel("Invalid precision");
                 return;
             }
 
-            string selectedMethod = null;
+            string? selectedMethod = null;
             if (NewtonCheck.IsChecked == true) selectedMethod = "Newton";
             else if (BisectionCheck.IsChecked == true) selectedMethod = "Bisection";
             else if (AlgebraicCheck.IsChecked == true) selectedMethod = "Algebraic";
@@ -88,9 +125,10 @@ namespace kursovaya
             }
 
             int iterations = 0;
+            TimeSpan elapsed = TimeSpan.Zero;
             string result = "";
-            Func<double, double> equationFunction = null;
-            Complex[] roots = null;
+            Func<double, double>? equationFunction = null;
+            Complex[]? roots = null;
 
             try
             {
@@ -113,7 +151,7 @@ namespace kursovaya
                             return;
                         }
                         var quadratic = new Quadratic(a1, b1, c1);
-                        result = SolveEquation(quadratic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
+                        result = SolveEquation(quadratic, selectedMethod, eps, decimalPlaces, out iterations, out elapsed, out roots);
                         equationFunction = quadratic.EvaluateReal;
                         break;
 
@@ -124,7 +162,7 @@ namespace kursovaya
                             return;
                         }
                         var cubic = new Cubic(a2, b2, c2, d2);
-                        result = SolveEquation(cubic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
+                        result = SolveEquation(cubic, selectedMethod, eps, decimalPlaces, out iterations, out elapsed, out roots);
                         equationFunction = cubic.EvaluateReal;
                         break;
 
@@ -135,14 +173,24 @@ namespace kursovaya
                             return;
                         }
                         var biquadratic = new Biquadratic(a3, b3, c3);
-                        result = SolveEquation(biquadratic, selectedMethod, eps, decimalPlaces, out iterations, out roots);
+                        result = SolveEquation(biquadratic, selectedMethod, eps, decimalPlaces, out iterations, out elapsed, out roots);
                         equationFunction = biquadratic.EvaluateReal;
                         break;
                 }
 
                 ResultBox.Text = result;
-                ComplexityText.Text = selectedMethod != "Algebraic" ? $"Iterations: {iterations}" : "Algebraic method. Iterations not applicable.";
 
+                if (selectedMethod == "Algebraic")
+                {
+                    ComplexityText.Text = "Algebraic method. Iterations not applicable.";
+                    TimeText.Text = $"Time: {elapsed.TotalMilliseconds:F3} ms";
+                }
+                else
+                {
+                    ComplexityText.Text = $"Iterations: {iterations}";
+                    TimeText.Text = $"Time: {elapsed.TotalMilliseconds:F3} ms";
+                }
+                
                 if (equationFunction != null)
                 {
                     double zMin = -10;
@@ -183,61 +231,40 @@ namespace kursovaya
             }
             catch (Exception ex)
             {
-                ErrorText.Text = $"Error: {ex.Message}";
+                MessageBox.Show($"{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Graph.Model = Draw.CreateEmptyPlotModel("Error in plotting function");
             }
         }
-
-        private string SolveEquation(dynamic equation, string method, double eps, int decimalPlaces, out int iterations, out Complex[] roots)
-        {
-            iterations = 0;
-            roots = null;
-            switch (method)
-            {
-                case "Newton":
-                    if (!Validate.TryParseComplexInitialPoint(InitialGuessBoxReal, InitialGuessBoxImaginary, out Complex guess))
-                    {
-                        throw new ArgumentException("Invalid initial guess.");
-                    }
-                    var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations);
-                    roots = new Complex[] { newtonRoot };
-                    return Validate.FormatComplex(newtonRoot, decimalPlaces);
-
-                case "Bisection":
-                    if (!Validate.TryParseInterval(LeftBoundBox, RightBoundBox, out double left, out double right))
-                    {
-                        throw new ArgumentException("Invalid interval bounds.");
-                    }
-                    var bisectionRoot = equation.SolveWithBisection(left, right, eps, out iterations);
-                    roots = new Complex[] { bisectionRoot };
-                    return Validate.FormatComplex(bisectionRoot, decimalPlaces);
-
-                case "Algebraic":
-                    roots = equation.SolveAlgebraically();
-                    string result = "";
-                    for (int i = 0; i < roots.Length; i++)
-                    {
-                        result += $"z{i + 1}: {Validate.FormatComplex(roots[i], decimalPlaces)}\n";
-                    }
-                    return result;
-
-                default:
-                    throw new ArgumentException("Invalid method.");
-            }
-        }
-
+        
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            var dialogWindow = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                FileName = "solution.txt",
+                Title = "Save Solution"
+            };
+
+            bool? result = dialogWindow.ShowDialog();
+            if (result != true)
+            {
+                return;
+            }
+            
             try
             {
-                System.IO.File.WriteAllText("solution.txt", ResultBox.Text);
-                MessageBox.Show("Saved to solution.txt", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.IO.File.WriteAllText(dialogWindow.FileName, ResultBox.Text);
+                MessageBox.Show($"Solution successfully saved to:\n{dialogWindow.FileName}", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                ErrorText.Text = $"File save error: {ex.Message}";
-                Graph.Model = Draw.CreateEmptyPlotModel("Error saving file");
+                MessageBox.Show($"Error saving file:\n{ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Validate.HelpButton_Click(sender, e);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace kursovaya.Graph
             var model = new PlotModel
             {
                 Title = title,
-                Background = OxyColors.Gray, 
+                Background = OxyColors.DarkGray, 
                 TitleColor = OxyColors.White  
             };
 

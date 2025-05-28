@@ -144,8 +144,9 @@
                 <TextBlock Text="Algorithm complexity:" Foreground="White" Margin="0,20,0,5"/>
                 <TextBlock Name="ComplexityText" Foreground="LightGray" Text=""/>
 
-                <!-- Вивід помилки -->
-                <TextBlock Name="ErrorText" Foreground="Red" Text="" Margin="0,20,0,0"/>
+                <!-- Вивід практичного часу роботи алгоритму -->
+                <TextBlock Text="Algorithm elapsed time:" Foreground="White" Margin="0,20,0,0"/>
+                <TextBlock Name="TimeText" Foreground="LightGray" Text="" />
                 
                 <!-- Кнопка для виводу інструкцій користування програмою -->
                 <Button Name="HelpButton" Content="Help"

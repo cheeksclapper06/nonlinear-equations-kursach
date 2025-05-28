@@ -1,12 +1,10 @@
-﻿using System;
-using System.Globalization; // Для CultureInfo.InvariantCulture, NumberStyles
+﻿using System.Globalization; 
 using System.Numerics;
-using System.Runtime.InteropServices; // Для Complex
 using System.Windows.Controls;
 using System.Windows;
-using static System.Windows.MessageBox; // Для TextBox
+using static System.Windows.MessageBox;
 
-namespace kursovaya.Validation
+namespace kursovaya.Validations
 {
 
     public static class Validate
@@ -47,7 +45,7 @@ namespace kursovaya.Validation
 
             if (double.IsNaN(a) || double.IsNaN(b) || double.IsNaN(c) || double.IsNaN(d))
             {
-                Show("Coefficient cannot be NaN", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Coefficient cannot be NaN", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
@@ -212,12 +210,7 @@ namespace kursovaya.Validation
             }
             return true;
         }
-        public static int GetDecimalPlaces(double precision)
-        {
-            return (int)Math.Max(0, Math.Ceiling(-Math.Log10(precision))) + 2; 
-        }
-
-     
+        
         public static string FormatComplex(Complex c, int decimalPlaces)
         {
             string realPartString = c.Real.ToString($"F{decimalPlaces}", CultureInfo.InvariantCulture);
@@ -225,7 +218,7 @@ namespace kursovaya.Validation
             
             double tolerance = Math.Pow(10, -decimalPlaces - 2); 
 
-            if (Math.Abs(c.Imaginary) < tolerance) 
+            if (Math.Abs(c.Imaginary) < tolerance)  
             {
                 return realPartString;
             }
@@ -235,28 +228,29 @@ namespace kursovaya.Validation
                 return $"{c.Imaginary.ToString($"F{decimalPlaces}", CultureInfo.InvariantCulture)}i"; 
             }
            
-            return $"{realPartString} {(c.Imaginary >= 0 ? "+" : "-")} {imagPartString}i";
+            return $"z = {realPartString} {(c.Imaginary >= 0 ? "+" : "-")} {imagPartString}i";
         }
+        
         public static void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             string instructions =
                 "Welcome to the Complex Nonlinear Equation Solver 2000!\n\n" +
-                "**1. Choose Equation Type:**\n" +
+                "1. Choose Equation Type:\n" +
                 "   - Select Quadratic (az² + bz + c = 0), Cubic (az³ + bz² + cz + d = 0), or Biquadratic (az⁴ + bz² + c = 0).\n" +
                 "   - Enter the coefficients in the respective fields. Values should be between -10000 and 10000.\n\n" +
-                "**2. Enter Initial Guess (for Newton's method):**\n" +
+                "2. Enter Initial Guess (for Newton's method):\n" +
                 "   - If using Newton's method, provide a complex initial guess (real part and imaginary part).\n" +
                 "   - This guess helps the algorithm start finding a root.\n\n" +
-                "**3. Enter Interval (for Bisection method):**\n" +
+                "3. Enter Interval (for Bisection method):\n" +
                 "   - If using the Bisection method, define a real interval [Left Bound, Right Bound].\n" +
                 "   - The function must change sign within this interval for the method to work (f(Left) * f(Right) < 0).\n\n" +
-                "**4. Enter Precision ε:**\n" +
+                "4. Enter Precision ε:\n" +
                 "   - Specify the desired precision for the solution. This value should be between 1e-14 and 0.1.\n\n" +
-                "**5. Choose the Method:**\n" +
+                "5. Choose the Method:\n" +
                 "   - **Newton:** An iterative method for finding roots, can find complex roots if the initial guess is complex.\n" +
                 "   - **Bisection:** A robust method for finding real roots within a given interval. Requires the function to change sign.\n" +
                 "   - **Algebraic:** Directly calculates roots using algebraic formulas (available for quadratic, cubic, and biquadratic equations).\n\n" +
-                "**6. Solve:**\n" +
+                "6. Solve:**\n" +
                 "   - Click the 'Solve' button to calculate the roots based on your inputs.\n" +
                 "   - The solution(s) will appear in the 'Solution' box.\n" +
                 "   - 'Algorithm complexity' will show the number of iterations (for iterative methods).\n" +
@@ -269,7 +263,7 @@ namespace kursovaya.Validation
                 "For complex roots, Newton's method with a complex initial guess is required.\n" +
                 "The Bisection method only finds real roots within a given interval.";
 
-            MessageBox.Show(instructions, "How to Use - Instructions", MessageBoxButton.OK, MessageBoxImage.Information);
+            Show(instructions, "How to Use - Instructions", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

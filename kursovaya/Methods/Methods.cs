@@ -55,46 +55,50 @@ namespace kursovaya.Methods
             out int iterations,
             int maxIterations = 1000)
         {
-            double mid = 0;
             iterations = 0;
+            double fLeft = function(left);
+            double fRight = function(right);
 
-            try
+            if (Math.Abs(fLeft) < precision)
             {
-                if (function(left) * function(right) > 0)
-                {
-                    throw new ArgumentException("Function must have opposite signs at the endpoints.");
-                }
-            
-                while ((right - left) / 2.0 > precision && iterations < maxIterations)
-                {
-                    mid = (left + right) / 2.0;
-                    double fMid = function(mid);
+                return new Complex(left, 0); 
+            }
+            if (Math.Abs(fRight) < precision)
+            {
+                return new Complex(right, 0); 
+            }
 
-                    if (Math.Abs(fMid) < precision)
-                    {
-                        break;
-                    }
+            if (fLeft * fRight > 0)
+            {
+                throw new ArgumentException("Function must have opposite signs at the endpoints (f(a)*f(b) < 0).");
+            }
+
+            double mid = 0;
+    
+            while ((right - left) / 2.0 > precision && iterations < maxIterations)
+            {
+                mid = (left + right) / 2.0;
+                double fMid = function(mid);
+
+                if (Math.Abs(fMid) < precision)
+                {
+                    break; 
+                }
                 
-                    if (function(left) * fMid < 0)
-                    {
-                        right = mid;
-                    }
-                    else
-                    {
-                        left = mid;
-                    }
-
-                    iterations++;
+                if (fLeft * fMid < 0)
+                {
+                    right = mid;
+                    fRight = fMid;
                 }
-
-                return new Complex(mid, 0);
+                else
+                {
+                    left = mid;
+                    fLeft = fMid;
+                }
+                iterations++;
             }
-            catch(Exception ex)
-            {
-                Show(ex.Message, "Bisection method warning", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw;
-            }
-           
+            
+            return new Complex(mid, 0);
         }
     }
 }

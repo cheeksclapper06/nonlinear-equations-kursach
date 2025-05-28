@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace kursovaya.Methods.Equations
 {
-    public class Biquadratic
+    public class Biquadratic : MainWindow.IPolynomial
     {
         private readonly double a;
         private readonly double b;
@@ -35,8 +36,10 @@ namespace kursovaya.Methods.Equations
             return a * Math.Pow(z, 4) + b * Math.Pow(z, 2) + c;
         }
 
-        public Complex[] SolveAlgebraically()
+        public Complex[] SolveAlgebraically(out TimeSpan elapsed)
         {
+            var time = Stopwatch.StartNew();
+            
             Complex A = a;
             Complex B = b;
             Complex C = c;
@@ -53,31 +56,28 @@ namespace kursovaya.Methods.Equations
             z[2] = Complex.Sqrt(t2);
             z[3] = -z[2];
 
+            time.Stop();
+            elapsed = time.Elapsed;
+            
             return z;
         }
         
-        public Complex SolveWithNewton(double precision, Complex initialGuess, out int iterationsCount, int maxIterations = 1000)
+        public Complex SolveWithNewton(double precision, Complex initialGuess, out int iterationsCount, out TimeSpan elapsed, int maxIterations = 1000)
         {
-            return Methods.NewtonMethod(
-                Evaluate,
-                Derivative,
-                initialGuess,
-                precision,
-                out iterationsCount,
-                maxIterations
-            );
+            var time = Stopwatch.StartNew();
+            Complex root = Methods.NewtonMethod(Evaluate, Derivative, initialGuess, precision, out iterationsCount, maxIterations);
+            time.Stop();
+            elapsed = time.Elapsed;
+            return root;
         }
-        
-        public Complex SolveWithBisection(double left, double right, double precision, out int iterationsCount, int maxIterations = 1000)
+
+        public Complex SolveWithBisection(double left, double right, double precision, out int iterationsCount, out TimeSpan elapsed, int maxIterations = 1000)
         {
-            return Methods.BisectionMethod(
-                EvaluateReal,
-                left,
-                right,
-                precision,
-                out iterationsCount,
-                maxIterations
-            );
+            var time = Stopwatch.StartNew();
+            Complex root = Methods.BisectionMethod(EvaluateReal, left, right, precision, out iterationsCount, maxIterations);
+            time.Stop();
+            elapsed = time.Elapsed;
+            return root;
         }
     }
 }
