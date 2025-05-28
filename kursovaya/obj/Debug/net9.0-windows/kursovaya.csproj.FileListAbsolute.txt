@@ -34,3 +34,4 @@ C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\Microsof
 C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.dll
 C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.Wpf.dll
 C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\OxyPlot.Wpf.Shared.dll
+C:\Users\User\source\repos\kursovaya\kursovaya\bin\Debug\net9.0-windows\favicon.ico

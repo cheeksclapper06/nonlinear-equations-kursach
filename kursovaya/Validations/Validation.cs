@@ -22,6 +22,18 @@ namespace kursovaya.Validations
             return scale > maxDecimalPlaces;
         }
         
+        public static bool ContainsComma(params TextBox[] boxes)
+        {
+            foreach (var box in boxes)
+            {
+                if (box.Text.Contains(','))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         public static bool TryParse4Coeffs(TextBox t1, TextBox t2, TextBox t3, TextBox t4, out double a, out double b, out double c, out double d)
         {
             a = 0; b = 0; c = 0; d = 0;
@@ -41,6 +53,12 @@ namespace kursovaya.Validations
             if (HasTooManyDecimalPlaces(t1.Text) || HasTooManyDecimalPlaces(t2.Text) || HasTooManyDecimalPlaces(t3.Text) || HasTooManyDecimalPlaces(t4.Text))
             {
                 Show("Coefficients have too many decimal places", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (ContainsComma(t1, t2, t3, t4))
+            {
+                Show("Coefficients can't contain commas", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
@@ -97,6 +115,12 @@ namespace kursovaya.Validations
                 return false;
             }
 
+            if (ContainsComma(t1, t2, t3))
+            {
+                Show("Coefficients can't contain commas", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
             if (a == 0)
             {
                 Show("First coefficient can't be zero", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -199,6 +223,12 @@ namespace kursovaya.Validations
             if (HasTooManyDecimalPlaces(realPart.Text) || HasTooManyDecimalPlaces(imagPart.Text))
             {
                 Show("Complex number parts have too many decimal places", "Invalid initial guess", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            
+            if (ContainsComma(realPart, imagPart))
+            {
+                Show("Coefficients can't contain commas", "Invalid coefficients", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             
