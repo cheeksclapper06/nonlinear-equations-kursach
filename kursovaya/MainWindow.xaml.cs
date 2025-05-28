@@ -68,6 +68,7 @@ namespace kursovaya
                     {
                         throw new ArgumentException("Invalid initial guess.");
                     }
+                    
                     var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations, out elapsed);
                     roots = [newtonRoot];
                     string resultNewton = $"z1: {Validate.FormatComplex(newtonRoot, decimalPlaces)}\n";
@@ -233,7 +234,7 @@ namespace kursovaya
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ResultBox.Text = $"Error: {ex.Message}\n";
                 Graph.Model = Draw.CreateEmptyPlotModel("Error in plotting function");
             }
         }
@@ -260,7 +261,7 @@ namespace kursovaya
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving file:\n{ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         

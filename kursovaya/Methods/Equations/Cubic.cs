@@ -51,7 +51,7 @@ public class Cubic : MainWindow.IPolynomial
         Complex u = CubeRoot(-q / 2.0 + sqrtDelta);
         Complex v = CubeRoot(-q / 2.0 - sqrtDelta);
 
-        Complex omega = new Complex(-0.5, Math.Sqrt(3) / 2); // кубический корень из 1
+        Complex omega = new Complex(-0.5, Math.Sqrt(3) / 2); 
         Complex z1 = u + v + offset;
         Complex z2 = u * omega + v * Complex.Conjugate(omega) + offset;
         Complex z3 = u * Complex.Conjugate(omega) + v * omega + offset;
