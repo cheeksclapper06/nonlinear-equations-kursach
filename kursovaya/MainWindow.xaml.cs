@@ -49,54 +49,6 @@ namespace kursovaya
             InitialGuessPanel.Visibility = NewtonCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             BisectionIntervalPanel.Visibility = BisectionCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
-
-        public interface IPolynomial
-        {
-            Complex SolveWithNewton(double eps, Complex z0, out int iters, out TimeSpan elapsed, int maxIters = 1000);
-            Complex SolveWithBisection(double left, double right, double eps, out int iters, out TimeSpan elapsed, int maxIters = 1000);
-            Complex[] SolveAlgebraically(out TimeSpan elapsed);
-        }
-        
-        private string SolveEquation(IPolynomial equation, string method, double eps, int decimalPlaces, out int iterations, out TimeSpan elapsed, out Complex[]? roots)
-        {
-            iterations = 0;
-            roots = null;
-            switch (method)
-            {
-                case "Newton":
-                    if (!Validate.TryParseComplexInitialPoint(InitialGuessBoxReal, InitialGuessBoxImaginary, out Complex guess))
-                    {
-                        throw new ArgumentException("Invalid initial guess.");
-                    }
-                    
-                    var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations, out elapsed);
-                    roots = [newtonRoot];
-                    string resultNewton = $"z1: {Validate.FormatComplex(newtonRoot, decimalPlaces)}\n";
-                    return resultNewton;
-
-                case "Bisection":
-                    if (!Validate.TryParseInterval(LeftBoundBox, RightBoundBox, out double left, out double right))
-                    {
-                        throw new ArgumentException("Invalid interval bounds.");
-                    }
-                    var bisectionRoot = equation.SolveWithBisection(left, right, eps, out iterations, out elapsed);
-                    roots = [bisectionRoot];
-                    string resultBisection = $"z1: {Validate.FormatComplex(bisectionRoot, decimalPlaces)}\n";
-                    return resultBisection;
-
-                case "Algebraic":
-                    roots = equation.SolveAlgebraically(out elapsed);
-                    string resultAlgebraic = "";
-                    for (int i = 0; i < roots.Length; i++)
-                    {
-                        resultAlgebraic += $"z{i + 1}: {Validate.FormatComplex(roots[i], decimalPlaces)}\n";
-                    }
-                    return resultAlgebraic;
-
-                default:
-                    throw new ArgumentException("Invalid method.");
-            }
-        }
         
         private void SolveButton_Click(object sender, RoutedEventArgs args)
         {
@@ -179,6 +131,10 @@ namespace kursovaya
                         result = SolveEquation(biquadratic, selectedMethod, eps, decimalPlaces, out iterations, out elapsed, out roots);
                         equationFunction = biquadratic.EvaluateReal;
                         break;
+
+                    default:
+                        Graph.Model = Draw.CreateEmptyPlotModel("Invalid equation type");
+                        return;
                 }
 
                 ResultBox.Text = result;
@@ -193,8 +149,7 @@ namespace kursovaya
                     ComplexityText.Text = $"Iterations: {iterations}";
                     TimeText.Text = $"Time: {elapsed.TotalMilliseconds:F3} ms";
                 }
-                
-                if (equationFunction != null)
+
                 {
                     double zMin = -10;
                     double zMax = 10;
@@ -227,15 +182,59 @@ namespace kursovaya
                     }
                     Graph.Model = plotModel;
                 }
-                else
-                {
-                    Graph.Model = Draw.CreateEmptyPlotModel("No function to plot");
-                }
             }
             catch (Exception ex)
             {
                 ResultBox.Text = $"Error: {ex.Message}\n";
                 Graph.Model = Draw.CreateEmptyPlotModel("Error in plotting function");
+            }
+        }
+        
+          public interface IPolynomial
+        {
+            Complex SolveWithNewton(double eps, Complex z0, out int iters, out TimeSpan elapsed, int maxIters = 1000);
+            Complex SolveWithBisection(double left, double right, double eps, out int iters, out TimeSpan elapsed, int maxIters = 1000);
+            Complex[] SolveAlgebraically(out TimeSpan elapsed);
+        }
+        
+        private string SolveEquation(IPolynomial equation, string method, double eps, int decimalPlaces, out int iterations, out TimeSpan elapsed, out Complex[]? roots)
+        {
+            iterations = 0;
+            roots = null;
+            switch (method)
+            {
+                case "Newton":
+                    if (!Validate.TryParseComplexInitialPoint(InitialGuessBoxReal, InitialGuessBoxImaginary, out Complex guess))
+                    {
+                        throw new ArgumentException("Invalid initial guess.");
+                    }
+                    
+                    var newtonRoot = equation.SolveWithNewton(eps, guess, out iterations, out elapsed);
+                    roots = [newtonRoot];
+                    string resultNewton = $"z1: {Validate.FormatComplex(newtonRoot, decimalPlaces)}\n";
+                    return resultNewton;
+
+                case "Bisection":
+                    if (!Validate.TryParseInterval(LeftBoundBox, RightBoundBox, out double left, out double right))
+                    {
+                        throw new ArgumentException("Invalid interval bounds.");
+                    }
+                    var bisectionRoot = equation.SolveWithBisection(left, right, eps, out iterations, out elapsed);
+                    roots = [bisectionRoot];
+                    string resultBisection = $"z1: {Validate.FormatComplex(bisectionRoot, decimalPlaces)}\n";
+                    return resultBisection;
+
+                case "Algebraic":
+                    roots = equation.SolveAlgebraically(out elapsed);
+                    string resultAlgebraic = "";
+                    for (int i = 0; i < roots.Length; i++)
+                    {
+                        resultAlgebraic += $"z{i + 1}: {Validate.FormatComplex(roots[i], decimalPlaces)}\n";
+                    }
+                    return resultAlgebraic;
+
+                default:
+                    throw new ArgumentException("Invalid method.");
             }
         }
         

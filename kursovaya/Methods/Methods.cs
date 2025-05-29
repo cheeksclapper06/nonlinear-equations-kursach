@@ -61,12 +61,15 @@ namespace kursovaya.Methods
 
             if (Math.Abs(fLeft) < precision)
             {
+                iterations = 1;
                 return new Complex(left, 0); 
             }
             if (Math.Abs(fRight) < precision)
             {
+                iterations = 1;
                 return new Complex(right, 0); 
             }
+
 
             if (fLeft * fRight > 0)
             {
